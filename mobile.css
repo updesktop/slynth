@@ -1,0 +1,57 @@
+@media only screen and (max-width:1024px) {  /* For mobile phones: */
+  .jheader {  
+    position: fixed;
+    top: 0; left:0;
+    width: 100%;
+    z-index: 90;
+  }
+  .inatay {  
+    color:black;
+    width: auto;
+  }
+  .divTilt1 {
+    font-size:22px;  
+    padding: 0px 0 0 0;
+    height: 55%;  
+    background-color: none;
+    color:white;text-shadow: 1px 1px 2px black, 0 0px 10px black, 0 0 5px darkblue;
+  }
+  .divTilt2 {
+    font-size:19px;
+    padding: 2px 0 0 0;
+    height: 45%;
+    color:black;
+    background-color: none;
+  }
+  .boxTitle{
+    color:indianred;
+  }    
+
+
+  .footer_fonts{
+    font-size:12px;
+    padding:0px;
+    height:30%;width:100%;    
+    text-align: center;
+  }
+  .footer_gfxs{    
+    text-align: center;margin:0 auto;
+    height:70%;width:100%;
+  }
+
+  .class_footer{
+    float:left;height:100%;width:100%;text-align:center;cursor:pointer;
+  }
+      .class_footer img{
+        height:auto;max-height:70%;
+        float:none;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: auto;
+      }
+      .class_footer span{
+        font-size:12px; padding:0px; margin:0px; text-align:center;height:30%;width:100%;
+      }
+
+}

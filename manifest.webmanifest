@@ -1,0 +1,22 @@
+{
+  "name": "Finding Slynth",
+  "short_name": "Slynth",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff",
+  "theme_color": "#98fb98",
+  "description": "Finding Slynth APP for EnadSys.",
+  "icons": [
+    {
+      "src": "gfx/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "gfx/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

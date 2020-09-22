@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="theme-color" content="#98fb98"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Finding Slynth</title>
+
+<link rel="shortcut icon" href="gfx/favicon.ico">
+<link rel="icon" href="gfx/favicon.ico">
+<link rel="apple-touch-icon" href="gfx/apple-touch-icon.png">
+<link rel="manifest" href="./manifest.webmanifest">
+
+<script>
+  var JBE_API=window.location.origin+'/api_slynth/';  
+  //JBE_API='https://aidfimonitoring.com/api/';  
+  JBE_API='https://updesk.heliohost.org/api_slynth/';  
+
+  var thisFile;
+  var jbepass;
+  var jbe_screen_mode=0;
+
+  var CURR_IDX_DB;
+
+  var JBE_CLOR='#039be5'; 
+  var JBE_CLOR2='#0080c0'; 
+  var JBE_CLOR3='#0080ff'; 
+  var JBE_CLOR4='#ff0000'; 
+
+  var JBE_TXCLOR1='#ffffff'; 
+  var JBE_TXCLOR2='#000000'; 
+  var JBE_TXCLOR3='#ffffff'; 
+  var JBE_TXCLOR4='#ffffff'; 
+
+  var JBE_ONLINE=true;
+  var JBE_ONLINE_NAVI=true;
+  
+  var JBE_DEF_IMG='gfx/jimage.png';
+
+  var DB_USER=[];  
+  var DB_MEMBERS=[];  
+  var DB_GROUP=[];  
+  var DB_PROJ=[];  
+  var DB_LANDMARKS=[];  
+
+
+  var CURR_CLIENT='';
+  var CURR_REC='';
+
+  var CURR_USER=''; 
+  var CURR_PASS=''; 
+  var CURR_NAME='';    
+  var CURR_AXTYPE='';    
+  var CURR_GROUP='';
+  var CURR_TAG=''; 
+ 
+  var H_WRAPPER=0;  
+  var H_HEADER=0;
+  var H_FOOTER=0;
+  var H_BODY=0;
+  var H_PAGE=0;
+  var H_VIEW=0;
+
+  var f_MainPage=false;
+  var f_reload=true;
+  var JBE_MOBILE=true;
+
+  
+
+  const JBE_HEADER = {
+    "Access-Control-Allow-Headers": "Origin, Content-Type, X-Auth-Token",
+    "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Origin": "*"
+  }
+  
+  
+  
+</script>
+
+</head>
+<body style="color:#252526;background:whitesmoke;padding: 0px;">
+<div id="snackbar"></div> 
+
+
+<!--************************* blocker-->
+<div id="je_msg" tabindex="0" data-rval="SAGBAYAN" class="modal" style="display:none;z-index:1250;" onkeydown="javascript:if(event.keyCode==27) closeModal()">
+  <div class="modal-content">
+    <div id="modal-header" class="modal-header" style="background:none;">
+      <!--span class="closeBtn" onclick="closeModal()">&times;</span-->
+      <span id="DivPrompt">
+        <h1>Modal Header</h1>
+      </span>				
+    </div>
+    <div id="modal-body" class="modal-body" style="background:lightgrey;">
+      <div id="msgBody">        
+      </div>	
+      <div style="height:auto;text-align:center;margin-top:5px;background:none;">
+        <div id="msgDivPrompt" style="display:none;margin-bottom:5px;">
+          <input class="je_msg_btn" type="text" id="txtPrompt" onkeydown="javascript:if(event.keyCode==13) MSG_CLICK(1)" style="width:40%;height:20px;border:1px solid black;text-align:center;" value="" />
+        </div>
+        <div id="msgDivOk" style="display:none;">
+          <!--input type="button" onclick="closeModal()" class="button" value="OK" /-->
+          <input type="text" id="txOk" style="display:none;width:100px;"/>
+          <input class="je_msg_btn" type="button" id="btnOk" onclick="MSG_CLICK(1)" onkeydown="javascript:if(event.keyCode==13) MSG_CLICK(1)" value="OK" />
+        </div>
+        <div id="msgDivYesNo" style="display:none;">
+          <input class="je_msg_btn" type="button" id="btnYes" onclick="MSG_CLICK(1)" value="Yes" />
+          <input class="je_msg_btn" type="button" id="btnNo"  onclick="MSG_CLICK(2)" value="No" style="margin-left: 2%;" />
+        </div>
+      </div>				
+    </div>
+    <div id="modal-footer" class="modal-footer" style="color:gray;text-align:right;height:auto;">
+      EnadSys Dialog Ver 1.01 Copyright (c) 2018
+    </div>
+  </div>	
+</div>  
+
+<div id="loading" class="modal" style="display:block;z-index:1450;">      
+  <div style="width:150px;height:150px;background:none;
+          position: absolute; top: 50%;  left: 50%;  
+          -webkit-transform: translate(-50%, -50%);  transform: translate(-50%, -50%);">      
+    <img src="gfx/proc_logo.gif" alt="proc image" style="float:right;height:100%;width:100%;background:none;" />
+  </div>
+</div>
+
+
+
+<div id="page_login" class="modal" data-jbepass="" style="display:none;width:100%;height:100%;background-color:none;padding:5px;">
+  
+  <div id="firstlogin" class="modal-content" data-mod="1" style="display:block;width:280px;height:310px;background:none;">      
+          
+    <div style="width:100%;height:100%; border-radius:5px; padding:3%; font-size:14px; background:lightgray;">
+      
+      <div style="width:100%;height:20px;font-size:14px;background:none;">        
+        <div style="float:right;width:20px;height:20px;text-align:center;border-radius:5px; cursor:pointer;
+          color:white;background:black;" onclick="closeLogin()">x</div>
+      </div>
+      <div id="dv_avatar" style="position:relative;width:100%;height:65px;text-align:center;background:none;">
+        <img id="img_avatar" data-img="" name="img_avatar" src="gfx/avatar.png" style="border-radius:50%;height:65px;width:65px;border:1px solid gray;"/>
+        <div id="div_avatar" style="display:none;position:absolute;top:50%;left:50%;cursor:pointer;border-radius:50%;border:1px solid black;
+              height:30px;width:30px;padding:3px;background:#434343;">              
+          
+          <input type="file" id="id_file" data-sel=0 name="id_file" hidden="hidden" />
+          <img src="gfx/jcam.png" onclick="JBE_PICK_IMAGE(id_file.id,img_avatar.id)" style="width:95%;"/>
+        </div>
+      </div>
+      
+      <div id="logpanel" style="margin-top:0%;height:auto;background:none;">
+
+        <div id="dv_uid" style="margin-top:0%; height:auto; width:100%;background:none;">
+          <div style="height:15px; width:100%; background:none;">User ID</div>
+          <div style="height:25px; width:100%;background:none;">
+            <input id="fuser" type="text" placeholder="User ID"  maxlength=20 onkeydown="javascript:if(event.keyCode==13) document.getElementById('fpass').focus()"
+              style="width:100%;height:25px;text-align:center;border-radius:5px;" value=""/>              
+          </div>
+        </div>
+        <div id="dv_pass" style="margin-top:2%; height:auto; width:100%;background:none;">
+          <div style="height:15px; width:100%;background:none;">Password</div>
+          <form onsubmit="return false" style="height:25px; width:100%;">
+            <input id="fpass" name="fpass" autocomplete="off" type="password" placeholder="Password" maxlength=20 onkeydown="javascript:if(event.keyCode==13) document.getElementById('lognow').focus()"
+              style="width:100%;height:25px;text-align:center;border-radius:5px;" value=""/>
+          </form>
+        </div>
+        
+      </div>
+
+      <div id="fmsg" style="display:none;margin-top:5px; height:60px; width:100%;font-size:12px;margin-bottom:0px;color:black;background:none;">
+        Make sure your password is 
+      </div>
+
+      <div id="log_1" style="display:block;margin-top:1px;text-align:center;height:30px;width:100%;background:none;">
+        <input id="lognow" type="button" onclick="chk_lognow()" style="width:48%;height:100%;color:white;background:#039be5;border:1px solid gray;border-radius:5px;cursor:pointer;" value="Log In"/>        
+      </div>
+      <div style="width:100%;height:auto;margin-top:9px;text-align:center;background:none;">Not a member yet? <span id="signUp" onclick="fm_profile(1)" style="font-weight:bold;cursor:pointer;color:red;"><u>Sign Up</u></span></div>        
+    </div>
+
+  </div>  
+
+</div>
+
+<div id="wrapper" style="width:100%;height:100%;background-color:none;">
+
+  <div id="page_main" class="page_class" style="display:block;width:100%;height:100%;background-color:none;">
+  
+    <div id="div_header" style="height:60px;width:100%;padding:5px;text-align:center;font-size:16px;font-weight:bold;">        
+      <div id="menu_open" onclick="openNav()" style="float:left;width:52px;height:100%;padding:3px;margin-left:10px;cursor:pointer;background-color:black;">
+        <!--div id="menu_open" style="width:auto;height:auto;max-width:100%;max-height:100%;font-weight:normal;color:black;font-size:30px;background:white;">
+           &#9776;
+        </div-->
+        <img id="hd_img" src="gfx/jham.png" style="width:100%;height:100%;">
+      </div>
+      
+      <div class="inatay" id="div_tilt" style="float:left;height:100%;margin-left:15px;background:none;">
+        <div onclick="jeff()" class="divTilt1">Finding Slynth</div>
+        <div onclick="alert(888)" id="divTilt2" class="divTilt2">Group App</div>
+      </div>  
+    
+      <div onclick="share()" style="float:right;height:100%;padding:0;margin-right:10px;background-color:none;">
+        <img id="online_logo" src="gfx/logoBW.png" style="height:100%;">
+      </div>
+    
+    </div>
+    
+    <div id="user_main" style="display:block;margin-top:0px;position:relative;width:100%;height:50%;padding:2px;border:1px solid gray;background:black;">
+      
+      <div id="theMap" style="width:100%;height:100%;border:0px solid red;background-color:none;"></div>
+  
+      <div style="display:block;position:absolute;width:250px;height:38px;padding:2px;border-radius:5px;right:2px;bottom:2px;z-index:1000;background:white;opacity:0.5"></div>
+    
+      <div id="coorPanel" style="display:none;width:250px;height:38px;padding:2px;border-radius:5px;position:absolute;right:2px;bottom:2px;
+                font-size:12px;border:2px solid darkgray;opacity:1;background-color:none;z-index:1005;"> 
+               
+        <div style="float:left;width:35px;height:100%;text-align:right;background:none;">
+            <div style="width:100%;height:50%;padding:2px 0 0 0;">Lat :</div>
+            <div style="width:100%;height:50%;">Long :</div>              
+        </div>
+        <div style="float:left;width:120px;height:100%;padding:2px 2px 0 0;margin-left:1%;color:red;background:none;">              
+            <div style="width:100%;height:50%;" id="coorPanel_lat">12.8797</div>                      
+            <div style="width:100%;height:50%;" id="coorPanel_lng">121.7740</div>                      
+        </div>        
+        <div style="float:right;width:82px;height:100%;margin-top:0%;text-align:right;color:red;background:none;">              
+            <img src="gfx/jadd.png" class="cls_coorpanel" onclick="createLandmark('add')" style="margin-left:0%;">
+            <img src="gfx/jsearch.png" class="cls_coorpanel" onclick="createLandmark('search')">
+            <img id="btnLive" src="gfx/jlive.png" class="cls_coorpanel" onclick="goLive()">
+        </div>        
+      </div>
+      
+    </div>        
+    
+  </div>
+
+  <div id="myJBox" class="modal_box" style="bottom:0px;z-index: 1100;">  
+  </div>
+  
+  <div id="myBox" class="modal_box">
+      
+    <div id="myBox_main" data-open=0 data-meter=0 class="bottom_box"> 
+      <div id="hd_box" style="width:100%;height:30px;font-size:15px;border:1px solid black;color:white;background:#3b5998;">
+        <div id="cap_box" style="float:left;width:90%;height:100%;padding:5px;background:none;">Title Box A</div>
+        <div style="float:right;width:10%;height:100%;background:none;">
+          <input type="button" onclick="closeBox()" style="float:right;width:30px;height:100%;font-size:14px;color:black;" value="X" />
+        </div>  
+      </div>  
+      <div id="dtl_box" style="width:100%;height:80px;bottom:0px;padding:5px;overflow:auto;border:1px solid black;color:black;background:none;">      
+      </div>   
+    </div>
+  
+  </div>
+  
+  <div id="myView1" data-page=0 data-open=0 data-close="" data-JBEpage=0 class="page_class myView" style="display:none;">
+    <div style="width:100%;height:30px;"></div>
+    <div class="back_main">      
+      <div id="back_view1" onclick="closeView(1)" class="back_class">
+        <img id="back_view_img1" src="gfx/jback.png" style="height:100%;" />
+        <span>Back</span>
+      </div>      
+      <div id="cap_myView1" class="cap_class"></div>
+      <div id="cap_viewMid1" class="cap_mid_class"></div>
+    </div>
+    <div id="dtl_myView1" class="myView_dtl">
+    </div>        
+  </div>  
+    
+  <div id="myView2" data-page=0 data-open=0 data-close="" class="page_class myView" style="display:none;">
+    <div style="width:100%;height:30px;"></div>
+    <div class="back_main">
+      <div id="back_view2" onclick="closeView(2)" class="back_class">
+        <img id="back_view_img2" src="gfx/jback.png" style="height:100%;" />
+        <span>Back</span>
+      </div>
+      <div id="cap_myView2" class="cap_class"></div>
+      <div id="cap_viewMid2" class="cap_mid_class"></div>
+    </div>
+    <div id="dtl_myView2" class="myView_dtl">
+      <!--dtl-->
+    </div>       
+  </div>
+  
+  <div id="myView3" data-page=0 data-open=0 data-close="" class="page_class myView" style="display:none;">
+    <div style="width:100%;height:30px;"></div>    
+    <div class="back_main">
+      <div id="back_view3" onclick="closeView(3)" class="back_class">
+        <img id="back_view_img3" src="gfx/jback.png" style="height:100%;" />
+        <span>Back</span>
+      </div>
+      <div id="cap_myView3" class="cap_class"></div>
+      <div id="cap_viewMid3" class="cap_mid_class"></div>
+    </div>
+    <div id="dtl_myView3" class="myView_dtl">
+      <!--dtl-->
+    </div>       
+  </div>
+  
+  <div id="myView4" data-page=0 data-open=0 data-close="" class="page_class myView" style="display:none;">
+    <div style="width:100%;height:30px;"></div> 
+    <div class="back_main">
+      <div id="back_view4" onclick="closeView(4)" class="back_class">
+        <img id="back_view_img4" src="gfx/jback.png" style="height:100%;" />
+        <span>Back</span>
+      </div>
+      <div id="cap_myView4" class="cap_class"></div>
+      <div id="cap_viewMid4" class="cap_mid_class"></div>
+    </div>
+    <div id="dtl_myView4" class="myView_dtl">
+      <!--dtl-->
+    </div>       
+  </div>
+  
+  <div id="myView5" data-page=0 data-open=0 data-close="" class="page_class myView" style="display:none;">
+    <div style="width:100%;height:30px;"></div> 
+    <div class="back_main">
+      <div id="back_view5" onclick="closeView(5)" class="back_class">
+        <img id="back_view_img5" src="gfx/jback.png" style="height:100%;" />
+        <span>Back</span>
+      </div>
+      <div id="cap_myView5" class="cap_class"></div>
+      <div id="cap_viewMid5" class="cap_mid_class"></div>
+    </div>
+    <div id="dtl_myView5" class="myView_dtl">
+      <!--dtl-->
+    </div>       
+  </div>
+  <!-- *************************PAGES***************************************************
+  ********************************************************************************-->
+  <div id="mySidenav" class="sidenav" style="color:lightgray;height:100%;font-size:9px;">
+   
+    <a href="javascript:dispAdmin(CURR_PROJID)" class="nav_menu" style="margin-top:20px;">
+      <div style="width:100%;">
+        <img src="gfx/jadmin.png" />
+        <span>Admin</span>
+      </div>      
+    </a>   
+    <a href="javascript:openLandmark()" class="nav_menu" style="margin-top:20px;">
+      <div style="width:100%;">
+        <img src="gfx/structure.png" />
+        <span>View All Landmark</span>
+      </div>      
+    </a> 
+    <a href="javascript:searchLatLong()" class="nav_menu" style="margin-top:20px;">
+      <div style="width:100%;">
+        <img src="gfx/jsearch.png" />
+        <span>Search Location</span>
+      </div>      
+    </a> 
+  
+  </div>
+
+  <div id="div_footer" style="position:absolute;bottom:0px;width:100%;height:50px;padding:4px;background:none;">
+    <div id="mnu_submenu" class="menu_class" style="display:none;width:100%;height:100%;"></div>
+    <div id="mnu_mainmenu" class="menu_class" style="display:block;width:100%;height:100%;background:none;">
+  
+      <div onclick="refreshMain()" style="float:left;width:20%;height:100%;background: none;">      
+        <div class="class_footer">
+          <img src="gfx/home.png" alt="home image" />
+          <span>Home</span>
+        </div>      
+      </div> 
+  
+      <div onclick="openGroup()" style="float:left;width:15%;height:100%;">
+        <div class="class_footer">
+          <img src="gfx/group.png" alt="group image" />
+          <span>Group</span>
+        </div> 
+      </div>
+  
+      <div onclick="openLandmark()" style="float:left;width:15%;height:100%;">
+        <div class="class_footer">
+          <img src="gfx/landmark.png" alt="openLandmark image" />
+          <span>Spots</span>
+        </div> 
+      </div>
+      
+      <div id="mnu_user" style="float:left;width:38%;height:100%;font-size:12px;text-align:center;padding:5px;border:1px solid white;background: none;">
+        <div style="float:left;width:100%;height:50%;color:black;font-weight:bold;background:none;">
+          <span id="logger">Please Log In</span>
+        </div>
+        <div id="jtime" style="float:left;width:100%;height:50%;margin-top:2px;color:white;background:none;">          
+        </div>
+      </div>
+      <div onclick="main_login()" style="float:right;width:10%;height:100%;">
+        <div class="class_footer">
+          <img id="log_avatar" src="gfx/avatar.png" onerror="this.onerror=null;this.src='gfx/jcancel.png';" style="height:100%;border-radius:50%;border:1px solid white;" alt="admin image" />
+          <span>Me</span>
+        </div> 
+      </div>
+      
+    </div>
+  
+  </div>
+    
+</div>
+
+<link rel="stylesheet" href="./main_styles.css">
+<link rel="stylesheet" href="./mobile.css">
+
+<link rel="stylesheet" type="text/css" href="js/leaflet.css" />
+<script type='text/javascript' src='js/leaflet.js'></script>
+<link rel="stylesheet" href="js/MarkerCluster.css" />
+<link rel="stylesheet" href="js/MarkerCluster.Default.css" />
+<script src="js/leaflet.markercluster-src.js"></script>
+
+<script type='text/javascript' src="js/coke.js"></script>
+<script type='text/javascript' src='js/je_msg.js'></script>
+<script type='text/javascript' src="js/axios.min.js"></script>
+
+<script type='text/javascript' src='./jbe_pages.js'></script>
+<script type='text/javascript' src='./jbe_jbe.js'></script>
+<script type='text/javascript' src='./jbe_map.js'></script>
+<script type='text/javascript' src='./jbe_admin.js'></script>
+<script type='text/javascript' src='./jbe_db.js'></script>
+
+<script type='text/javascript' src='./main_app.js'></script>
+<script type='text/javascript' src='./main_db.js'></script>
+<script type='text/javascript' src='./main_lib.js'></script>
+
+<script type='text/javascript' src='./jbelib.js'></script>
+
+<script> 
+
+if ('serviceWorker' in navigator) {
+		navigator.serviceWorker.register('./SW_SLYNTH.js', { scope: './' }).then(function(registration) {
+			console.log('Service worker registration succeeded:', registration);
+		}).catch(function(error) {
+			console.log('Service worker registration failed:', error);
+		});
+	} else {
+		console.log('Service workers are not supported.');
+	}
+  
+  /***************************************************** */
+	
+  window.addEventListener('load', function() {
+    window.history.pushState({ noBackExitsApp: true }, '');    
+  })
+
+  window.addEventListener('popstate', function(event) {
+    window.history.pushState({ noBackExitsApp: true }, '');
+    console.log(event.state);
+    //if (history.state  &&  history.state.page == 1) {
+      //alert('we are on page 1');
+    //}
+    
+    if (event.state) {
+      if(f_MainPage){                
+        refreshIDX();
+        MSG_SHOW(vbYesNo,"CONFIRM: ","Close the App?",function(){          
+          window.history.go(0);
+          f_reload=true;
+        },function(){});                  
+      }
+    }
+  })
+
+  function share() {
+    var text = "You Design, We Layout, Let's Print!";
+    if ('share' in navigator) {
+        navigator.share({
+            title: document.title,
+            text: text,
+            url: location.href,
+        })
+    } else {
+        // Here we use the WhatsApp API as fallback; remember to encode your text for URI
+        location.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(text + ' - ') + location.href
+    }
+  }
+
+  function openNav() {       
+    if(CURR_USER==null){
+      plsLogin();
+      return; 
+    }
+    
+    if(document.getElementById('menu_open').getAttribute('data-open')=='1'){
+      closeNav();
+      return;
+    }
+    //document.getElementById('menu_open').innerHTML='&#8592;';
+    document.getElementById('hd_img').src='gfx/jback.png';    
+    document.getElementById("mySidenav").style.width = "300px";
+    document.getElementById("menu_open").setAttribute('data-open','1');
+    event.stopPropagation();    
+  }
+
+  function closeNav() {
+    //document.getElementById('menu_open').innerHTML='&#9776;';
+    document.getElementById('hd_img').src='gfx/jham.png';    
+    document.getElementById("mySidenav").style.width = "0";   
+    document.getElementById("menu_open").setAttribute('data-open','0'); 
+    event.stopPropagation();    
+  }
+
+  window.onclick = function(event) {  
+    //alert(event.target.id);  
+    //if(event.target.id !== 'mySidenav' && event.target.id !== 'menu_open') {       
+    
+    if(event.target.id !== 'mySidenav') {         
+      closeNav();    
+    }    
+  }
+  
+  CURR_USER=readCookie('cok_fs_user'); 
+  CURR_PASS=readCookie('cok_fs_pass'); 
+  CURR_NAME=readCookie('cok_fs_name'); 
+  CURR_AXTYPE=readCookie('cok_fs_axtype'); 
+  CURR_GROUP=readCookie('cok_fs_group'); 
+  CURR_TAG=readCookie('cok_fs_tag'); 
+
+// =============================================================================================================== ***/  
+  myResizeFunction();
+  //map
+  var JLAT=0; var JLNG=0;    
+  var LOC_MEMBERS;
+  
+  //var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
+  //    mqi = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom: 20, subdomains:['mt0','mt1','mt2','mt3']});      
+
+  var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
+      mqi = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{maxZoom: 20, subdomains:['mt0','mt1','mt2','mt3']});            
+
+  //var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"),
+  //  mqi = L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png", {subdomains: ['otile1','otile2','otile3','otile4']});
+          
+  var markerClusters = L.markerClusterGroup();
+  var memberClusters = L.markerClusterGroup();  
+  var landmarkClusters = L.markerClusterGroup();  
+  var searchMarker = L.marker([JLAT,JLNG], {icon: searchIcon});  
+
+  var map = L.map( 'theMap', {
+    center: [12.8797, 121.7740],
+    minZoom: 2,
+    zoom: 6,
+    layers: [mqi],  
+    labels: true,
+    zoomControl: false  
+  });
+
+  map.on('click', function(e){
+    
+    var coord = e.latlng;
+    var lat = coord.lat;
+    var lng = coord.lng;
+    document.getElementById("coorPanel_lat").innerText=lat;
+    document.getElementById("coorPanel_lng").innerText=lng;  
+    });
+
+  var baseMaps = {
+    "Map View": osm,
+    "Satellite View": mqi
+  };
+
+  var overlays =  {//add any overlays here    
+    };
+  
+  L.control.zoom({
+    position: 'topright'
+  }).addTo(map);
+
+  L.control.layers(baseMaps,overlays, {position: 'bottomleft'}).addTo(map);
+
+  var layerGroup = L.layerGroup().addTo(map);  
+
+  var F_LIVE=false;
+
+  var searchIcon = new L.icon({iconUrl: './js/images/marker-icon.png',iconSize:[25,41],iconAnchor: [13, 47]});
+  //var redIcon = new L.icon({iconUrl: './gfx/jRedMarker.png',iconSize:[42,41],iconAnchor: [21,41]});  
+  //var jbeIcon = new L.icon({iconUrl: './gfx/jblueMarker.png',className:'my_custom_icon'});
+  //var redIcon = new L.icon({iconUrl: './gfx/jRedMarker.png',className:'user_custom_icon'});
+  
+  // placeholders for the L.marker and L.circle representing user's current position and accuracy    
+  var current_position, current_accuracy;
+  map.on('locationfound', onLocationFound);
+  map.on('locationerror', onLocationError);
+  //alert('current_position '+current_position);
+  //============================================================================================================== ***/    
+ 
+  //=========START ENGINE=================
+  je_msg_color('white',JBE_CLOR);
+  var d = new Date();  
+  var n = d.toLocaleTimeString();
+
+  document.getElementById('div_header').style.backgroundColor=JBE_CLOR;
+  document.getElementById('div_footer').style.backgroundColor=JBE_CLOR;
+    
+  showProgress(false);
+/*
+  alert(
+    'CURR_USER '+CURR_USER+'\n'+
+    'CURR_GROUP '+CURR_GROUP
+  );
+*/  
+    
+  //showUser();
+  CURR_IDX_DB='IDX_SLYNTH';      
+  initDb();      
+  //window.history.pushState({ noBackExitsApp: true }, '');
+  f_MainPage=true;
+
+  start_app();
+
+</script>
+
+</body>
+</html>
